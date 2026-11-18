@@ -29,9 +29,25 @@ jobs:
       - run: node scripts/build.mjs --sync
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: Check whether Pages is enabled
+        id: hosting
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          code=$(curl -sS -o "$RUNNER_TEMP/pages-config.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")
+          case "$code" in
+            200) enabled=$(jq -r '.build_type == "workflow"' "$RUNNER_TEMP/pages-config.json") ;;
+            404) enabled=false ;;
+            *) echo "Pages configuration returned HTTP $code"; exit 1 ;;
+          esac
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
       - uses: actions/configure-pages@v5
+        if: steps.hosting.outputs.enabled == 'true'
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
       - id: deploy
+        if: steps.hosting.outputs.enabled == 'true'
         uses: actions/deploy-pages@v4
