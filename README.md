@@ -28,7 +28,7 @@ npm run save -- https://withmetaphor.com/ "Metaphor" agents "A cloud coding agen
 
 The writer checks for an existing open record before inserting. The index also merges duplicate canonical URLs. The X preview uses the supplied excerpt or the official oEmbed response when available. Each saved post retains its original link and can load the official embed on demand.
 
-To revise a record, edit its issue body. Close the issue to withdraw it from the index. The static starter collection includes four clearly attributed references from Metaphor’s website alongside the first curator submission.
+To revise a record, edit its issue body. Close the issue to withdraw it from the index. The “Inside Metaphor” shelf links to the featured project’s own research and model directory. Latest, search, and collection counts reflect curator submissions.
 
 ## Run the site
 

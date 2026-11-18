@@ -89,3 +89,10 @@ test("every page is collected even when early pages contain unrelated issues", a
   assert.equal((await readIssues(req)).length, 1);
   assert.equal(page, 2);
 });
+
+test("source reading stays separate from the curator's Latest feed", async () => {
+  const { content } = await import("../src/view.mjs");
+  const latest = content("latest", "../", [fromIssue(issue)]);
+  assert.doesNotMatch(latest, /tool call analysis/);
+  assert.match(content("metaphor", "../", []), /tool call analysis/);
+});

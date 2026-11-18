@@ -1,8 +1,10 @@
 import { categories, tweetId } from "./catalog.mjs";
+import { references } from "./metaphor.mjs";
 import { icon, logo } from "./icons.mjs";
 export const pages = {
   home: "Overview",
   latest: "Latest",
+  metaphor: "Inside Metaphor",
   collections: "Collections",
   ...Object.fromEntries(
     Object.entries(categories).map(([k, v]) => [k, v.name]),
@@ -26,6 +28,7 @@ const link = (root, p, text) =>
   "</a>";
 const desc = {
   home: "A personal collection of AI tools, models, and ideas worth keeping.",
+  metaphor: "Research and model references from the featured resource.",
   latest: "The newest additions to the index, in the order they were saved.",
   collections: "Browse the archive by category.",
 };
@@ -135,6 +138,7 @@ export function content(page, root, items) {
     "<span>.</span></h1><p>" +
     esc(desc[page] || categories[page]?.description) +
     "</p></div>";
+  if (page === "metaphor") return top + cards(references, root);
   if (page === "collections")
     return (
       top + '<section class="directory">' + tiles(root, items) + "</section>"
@@ -155,14 +159,18 @@ export function content(page, root, items) {
     );
   }
   const feature = items.find((i) => i.art === "metaphor");
-  const latest = items.filter((i) => i !== feature).slice(0, 3);
+  const latest = items.slice(0, 3);
   const posts = items.filter((i) => i.category === "x").slice(0, 3);
   const hero = feature
     ? '<a class="feature" href="' +
       esc(feature.url) +
       '" target="_blank" rel="noopener noreferrer"><span class="feature-tag">' +
       icon("spark", 13) +
-      ' Featured find</span><div class="feature-body"><h2>Metaphor</h2><p>A cloud coding agent with its own workspace.</p><span class="feature-cta">Explore resource ' +
+      ' Featured find</span><div class="feature-body"><h2>' +
+      esc(feature.title) +
+      "</h2><p>" +
+      esc(feature.description) +
+      '</p><span class="feature-cta">Explore resource ' +
       icon("external", 14) +
       "</span></div></a>"
     : "";
@@ -180,6 +188,11 @@ export function content(page, root, items) {
     link(root, "collections", "All collections") +
     "</section></div>" +
     '<section class="shelf">' +
+    (feature
+      ? head("Inside Metaphor", link(root, "metaphor", "Show more")) +
+        cards(references.slice(0, 3), root) +
+        '</section><section class="shelf">'
+      : "") +
     head("Latest", link(root, "latest", "Show more")) +
     (latest.length
       ? cards(latest, root)
